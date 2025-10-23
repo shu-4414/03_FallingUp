@@ -2,18 +2,37 @@ using UnityEngine;
 
 public class WASD : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    // GitHub ni hyouji sareta ppoi!!
-    void Start()
+    Rigidbody rb;
+    float speed = 5.0f;
+    private void Start()
     {
         
+        rb = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        // Wキー移動
+        if (Input.GetKey(KeyCode.W))
+    {
+            rb.angularVelocity = transform.forward * speed;
+        }
+        // Sキー移動
+        if (Input.GetKey(KeyCode.S))
+        {
+            rb.angularVelocity = - transform.forward * speed;
+        }
+        // Dキー移動
+        if (Input.GetKey(KeyCode.D))
+        {
+            rb.angularVelocity = transform.right * speed;
+        }
+        // Aキー移動
+        if (Input.GetKey(KeyCode.A))
+        {
+            rb.angularVelocity = - transform.right * speed;
     }
+}
 }
 
 // C#で書いたコメント（日本語）は文字化けするっぽいから、こっちで書き直していくのがいいのかも。ほかにやり方あればいいな
