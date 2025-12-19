@@ -1,3 +1,5 @@
+// こちらのスクリプトはボツになりました。PlayerControllerで移動と視点操作を一本化しました。
+
 using UnityEngine;
 
 public class WASD : MonoBehaviour
@@ -35,5 +37,3 @@ public class WASD : MonoBehaviour
 }
 }
 
-// C#で書いたコメント（日本語）は文字化けするっぽいから、こっちで書き直していくのがいいのかも。ほかにやり方あればいいな
-// ちなみにこっちで書いた日本語は正しく読まれないとおもう。
