@@ -11,7 +11,9 @@ public class PlayerController : MonoBehaviour
 
     [Header("カメラ設定")]
     [SerializeField] private Transform playerCamera;
+    
     private float xRotation = 0f;
+    public bool isGravityMove = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -32,6 +34,10 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         HandleMouseLook();
+
+        // 重力方向に応じてプレイヤーを回転
+        Quaternion targetRotation = Quaternion.FromToRotation(transform.up, -Physics.gravity.normalized) * transform.rotation;
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 2f);
     }
 
     private void FixedUpdate()
@@ -44,8 +50,20 @@ public class PlayerController : MonoBehaviour
         float moveX = Input.GetAxisRaw("Horizontal"); // A,D
         float moveZ = Input.GetAxisRaw("Vertical"); // W,S
 
-        Vector3 move = (transform.right * moveX + transform.forward * moveZ).normalized;
-        rb.linearVelocity = move * moveSpeed;
+        // 現在の重力方向を取得（正規化）
+        Vector3 gravityDir = Physics.gravity.normalized;
+
+        // 現在の重力方向を下とみなした座標系を作る
+        Vector3 playerUp = -gravityDir;
+        Vector3 playerForward = Vector3.ProjectOnPlane(transform.forward, playerUp).normalized;
+        Vector3 playerRight = Vector3.ProjectOnPlane(transform.right, playerUp).normalized;
+
+        // 入力方向を組み立てる
+        Vector3 move = (playerRight * moveX + playerForward * moveZ).normalized;
+
+        // 新しい速度（重力成分は消さない）
+        Vector3 newVelocity = move * moveSpeed + Vector3.Project(rb.linearVelocity, gravityDir);
+        rb.linearVelocity = newVelocity;
     }
 
     private void HandleMouseLook()
@@ -60,5 +78,17 @@ public class PlayerController : MonoBehaviour
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -80f, 80f); // 視点制限
         playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+
+        
     }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        isGravityMove = true;
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        isGravityMove = false;
+    }
+
 }
